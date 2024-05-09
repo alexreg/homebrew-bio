@@ -2,9 +2,9 @@ class Plink2 < Formula
   # cite Chang_2015: "https://doi.org/10.1186/s13742-015-0047-8"
   desc "Analyze genotype and phenotype data"
   homepage "https://www.cog-genomics.org/plink2"
-  url "https://github.com/chrchang/plink-ng/archive/refs/tags/b15c19f.tar.gz"
-  version "1.90b5"
-  sha256 "e00ef16ac5abeb6b4c4d77846bd655fafc62669fbebf8cd2e941f07b3111907e"
+  url "https://github.com/chrchang/plink-ng/archive/refs/tags/v2.00a5.10.tar.gz"
+  version "2.00a5"
+  sha256 "53d845c6a04f8fc701e6f58f6431654e36cbf6b79bff25099862d169a8199a45"
   head "https://github.com/chrchang/plink-ng.git"
 
   bottle do
@@ -15,20 +15,22 @@ class Plink2 < Formula
 
   depends_on "openblas"
   uses_from_macos "zlib"
+  # depends_on "zlib"
 
   def install
-    cd "1.9" do
-      system "make", "-f", "Makefile.std", "plink",
+    cd "2.0" do
+      system "make", "install",
         "BLASFLAGS=-L#{Formula["openblas"].opt_lib} -lopenblas",
         "CFLAGS=-flax-vector-conversions",
         "CPPFLAGS=-DDYNAMIC_ZLIB -I#{Formula["openblas"].opt_include}",
-        "ZLIB=-L#{Formula["zlib"].opt_lib} -lz"
-      bin.install "plink" => "plink2"
+        "ZLIB=-L#{Formula["zlib"].opt_lib} -lz",
+        "DESTDIR=#{prefix}",
+        "PREFIX="
     end
   end
 
   test do
     system "#{bin}/plink2", "--dummy", "513", "1423", "0.02", "--out", "dummy_cc1"
-    assert_predicate testpath/"dummy_cc1.bed", :exist?
+    assert_predicate testpath/"dummy_cc1.pgen", :exist?
   end
 end
